@@ -7,6 +7,10 @@ struct RootView: View {
     var body: some View {
         NavigationView {
             containerView
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    appTitle
+                }
         }
     }
     
@@ -71,6 +75,15 @@ struct RootView: View {
                 viewModel.birthday = Date()
             }
             .foregroundColor(.blue)
+        }
+    }
+    
+    @ToolbarContentBuilder var appTitle: some ToolbarContent {
+        ToolbarItem(placement: .principal) {
+            Image(.iconNanit)
+                .resizable()
+                .scaledToFit()
+                .frame(height: 20)
         }
     }
 }
