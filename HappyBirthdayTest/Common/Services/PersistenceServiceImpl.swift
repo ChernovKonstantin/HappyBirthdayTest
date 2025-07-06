@@ -4,8 +4,8 @@ import UIKit
 
 final class PersistenceServiceImpl: PersistenceService {
     
-    private let babyFileName = "baby.json"
-    private let imageFileName = "baby_image.jpg"
+    private let babyFileName = "baby2.json"
+    private let imageFileName = "baby_image2.jpg"
     
     private var documentsURL: URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
@@ -20,14 +20,12 @@ final class PersistenceServiceImpl: PersistenceService {
     }
     
     func saveBaby(_ baby: BabyData) throws {
-        // Save image
-        guard let imageData = baby.image.jpegData(compressionQuality: 0.9) else {
-            throw NSError(domain: "ImageEncoding", code: 0, userInfo: [NSLocalizedDescriptionKey: "Could not encode image"])
+        let imageData = baby.image?.jpegData(compressionQuality: 0.9)
+        if let imageData {
+            try imageData.write(to: imageURL)
         }
-        try imageData.write(to: imageURL)
         
-        // Save JSON
-        let codableBaby = Baby(name: baby.name, birthday: baby.birthday, imageFileName: imageFileName)
+        let codableBaby = Baby(name: baby.name, birthday: baby.birthday, imageFileName: imageData == nil ? "" : imageFileName)
         let data = try JSONEncoder().encode(codableBaby)
         try data.write(to: babyJSONURL)
     }
@@ -35,12 +33,11 @@ final class PersistenceServiceImpl: PersistenceService {
     func getBaby() throws -> BabyData {
         let data = try Data(contentsOf: babyJSONURL)
         let baby = try JSONDecoder().decode(Baby.self, from: data)
-        
-        let imageData = try Data(contentsOf: documentsURL.appendingPathComponent(baby.imageFileName))
-        guard let image = UIImage(data: imageData) else {
-            throw NSError(domain: "ImageDecoding", code: 0, userInfo: [NSLocalizedDescriptionKey: "Could not decode image"])
+        var image: UIImage? = nil
+        if !baby.imageFileName.isEmpty {
+            let imageData = try Data(contentsOf: documentsURL.appendingPathComponent(baby.imageFileName))
+            image = UIImage(data: imageData)
         }
-        
         return BabyData(name: baby.name, birthday: baby.birthday, image: image)
     }
     

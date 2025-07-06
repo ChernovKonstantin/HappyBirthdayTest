@@ -10,5 +10,5 @@ struct Baby: Codable {
 struct BabyData {
     let name: String
     let birthday: Date
-    let image: UIImage
+    let image: UIImage?
 }

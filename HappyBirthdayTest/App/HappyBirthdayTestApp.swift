@@ -3,7 +3,7 @@ import SwiftUI
 @main
 struct HappyBirthdayTestApp: App {
     
-    private var rootViewModel: RootView.RootViewModel
+    private var rootViewModel: RootView.ViewModel
     
     init() {
         let persistenceService = PersistenceServiceImpl()
